@@ -73,21 +73,31 @@ FEEDS = {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleItem"],
         "overwrite": True,
+        "store_empty": False,
     },
     "export-%(course_id)s/module-items.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleSubitemItem"],
         "overwrite": True,
+        "store_empty": False,
     },
     "export-%(course_id)s/files.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.CanvasFileItem"],
         "overwrite": True,
+        "store_empty": False,
+    },
+    "export-%(course_id)s/pages.jsonl": {
+        "format": "jsonlines",
+        "item_classes": ["class_archiver.items.CanvasPageItem"],
+        "overwrite": True,
+        "store_empty": False,
     },
     "export-%(course_id)s/panopto-sessions.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.PanoptoSessionItem"],
         "overwrite": True,
+        "store_empty": False,
     },
 }
 
@@ -108,7 +118,7 @@ FEEDS = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
 HTTPCACHE_ENABLED = True
 HTTPCACHE_ALWAYS_STORE = True
-HTTPCACHE_EXPIRATION_SECS = 0
+HTTPCACHE_EXPIRATION_SECS = 30 * 60
 HTTPCACHE_DIR = "httpcache"
 HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"

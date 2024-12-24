@@ -4,7 +4,13 @@ import scrapy
 from scrapy.selector import Selector
 
 from ..canvas import CanvasScrapyClient
-from ..items import CanvasAssignmentItem, CanvasFileItem, ModuleItem, ModuleSubitemItem
+from ..items import (
+    CanvasAssignmentItem,
+    CanvasFileItem,
+    CanvasPageItem,
+    ModuleItem,
+    ModuleSubitemItem,
+)
 
 
 class CanvasModulesSpider(scrapy.Spider):
@@ -135,6 +141,7 @@ class CanvasModulesSpider(scrapy.Spider):
             yield self.canvas.request(endpoint, self.parse_file)
 
         r = CanvasPageItem()
-        for k in {"id", "url", "body"}:
+        r["id"] = page["page_id"]
+        for k in {"url", "body"}:
             r[k] = page[k]
         yield r
