@@ -132,12 +132,14 @@ class PanoptoSpider(scrapy.Spider):
         results = data["Results"]
         for sess in results:
             it = PanoptoSessionItem()
+            delivery_id = sess["DeliveryID"]
+            it["id"] = delivery_id
             it["name"] = sess["SessionName"]
             it["ios_video_url"] = sess["IosVideoUrl"]
             # hardcode language 0 which I assume to be english
             it["srt_url"] = (
                 f"{self.panopto_url}/Panopto/Pages/Transcription/GenerateSRT.ashx"
-                + f"?id={quote(folder_id)}&language=0"
+                + f"?id={quote(delivery_id)}&language=0"
             )
             yield it
 

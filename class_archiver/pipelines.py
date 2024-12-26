@@ -10,14 +10,15 @@ from itemadapter import ItemAdapter
 import scrapy
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.http.request import NO_CALLBACK
-from scrapy.utils.httpobj import urlparse_cached
 
-from .items import CanvasFileItem
+from .items import CanvasFileItem, PanoptoSessionItem
 from .spiders.canvas import CanvasModulesSpider
 from .spiders.panopto import PanoptoSpider
 
 
 class CanvasFilesPipeline(FilesPipeline):
+    MEDIA_NAME = "canvas_file"
+
     def get_media_requests(self, item, info):
         if isinstance(item, CanvasFileItem):
             assert isinstance(
@@ -37,7 +38,7 @@ class CanvasFilesPipeline(FilesPipeline):
         clean_filename = re.sub(r"[/\\?%*:|\"<>\x7F\x00-\x1F]", "-", item["filename"])
         clean_filename = clean_filename.strip(".")
         assert clean_filename
-        return f"canvas-files/{course_id}/{item['id']}_{clean_filename}"
+        return f"export-{course_id}/canvas-files/{item['id']}_{clean_filename}"
 
     def item_completed(self, results, item, info):
         if isinstance(item, CanvasFileItem):
@@ -47,26 +48,20 @@ class CanvasFilesPipeline(FilesPipeline):
                     f"expected 1 ok result, got {len(ok_results)}: {results!r}"
                 )
             (r,) = ok_results
-            if r["url"] != item["download_url"]:
+            if r.request.url != item["download_url"]:
                 raise AssertionError()
-            item["file_path"] = ok_results[0]["path"]
-            return item
-        return super().item_completed(results, item, info)
+            item["file_path"] = r["path"]
+        return item
 
 
-class PanoptoFilesPipeline(FilesPipeline):
+class PanoptoSessionsPipeline(FilesPipeline):
+    MEDIA_NAME = "panopto_session"
+
     def get_media_requests(self, item, info):
         if isinstance(item, PanoptoSessionItem):
             assert isinstance(
                 info.spider, PanoptoSpider
             ), f"unknown spider {info.spider!r} returned PanoptoSessionItem"
-            yield scrapy.Request(
-                item["ios_video_url"],
-                headers=info.spider.canvas.auth_headers(),
-                meta={"panopto_type": "video"},
-                dont_filter=True,
-                callback=NO_CALLBACK,
-            )
             yield scrapy.Request(
                 item["srt_url"],
                 headers=info.spider.canvas.auth_headers(),
@@ -79,16 +74,20 @@ class PanoptoFilesPipeline(FilesPipeline):
         return []
 
     def file_path(self, request, response=None, info=None, *, item=None):
-        assert isinstance(info.spider, CanvasModulesSpider)
+        assert isinstance(info.spider, PanoptoSpider), f"Expected to be scraping from PanoptoSpider"
         course_id = info.spider.course_id
-        name = PurePosixPath(urlparse_cached(request).path).name
+        name = item["name"]
         name = re.sub(r"[/\\?%*:|\"<>\x7F\x00-\x1F]", "-", name).strip(".")
-        assert name
-        if request.meta["panopto_type"] == "video":
-            pass
-        elif request.meta["panopto_type"] == "srt":
-            name += ".srt"
-        return f"panopto-files/{course_id}/{name}"
+        assert name, f"name is empty: {request}"
+        return f"export-{course_id}/panopto-sessions/{name}_{item['id']}.srt"
 
     def item_completed(self, results, item, info):
-        raise NotImplementedError()
+        if isinstance(item, PanoptoSessionItem):
+            ok_results = [r for ok, r in results if ok]
+            if len(ok_results) != 1:
+                raise AssertionError(
+                    f"expected 1 ok result, got {len(ok_results)}: {results!r}"
+                )
+            (r,) = ok_results
+            item["srt_path"] = r["path"]
+        return item

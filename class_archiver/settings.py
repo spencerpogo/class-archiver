@@ -64,30 +64,31 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "class_archiver.pipelines.CanvasFilesPipeline": 800,
+    "class_archiver.pipelines.PanoptoSessionsPipeline": 801,
 }
 MEDIA_ALLOW_REDIRECTS = True
-FILES_STORE = "files"
+FILES_STORE = "./"
 
 FEEDS = {
-    "export-%(course_id)s/modules.jsonl": {
+    "export-%(course_id)s/canvas-modules.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/module-items.jsonl": {
+    "export-%(course_id)s/canvas-module-subitems.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleSubitemItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/files.jsonl": {
+    "export-%(course_id)s/canvas-files.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.CanvasFileItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/pages.jsonl": {
+    "export-%(course_id)s/canvas-pages.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.CanvasPageItem"],
         "overwrite": True,
@@ -118,7 +119,7 @@ FEEDS = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
 HTTPCACHE_ENABLED = True
 HTTPCACHE_ALWAYS_STORE = True
-HTTPCACHE_EXPIRATION_SECS = 30 * 60
+HTTPCACHE_EXPIRATION_SECS = 0
 HTTPCACHE_DIR = "httpcache"
 HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
