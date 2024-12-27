@@ -70,6 +70,11 @@ MEDIA_ALLOW_REDIRECTS = True
 FILES_STORE = "out"
 
 FEEDS = {
+    "out/courses.jsonl": {
+        "format": "jsonlines",
+        "item_classes": ["class_archiver.items.CourseItem"],
+        "overwrite": False,
+    },
     "out/export-%(course_id)s/canvas-modules.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleItem"],
