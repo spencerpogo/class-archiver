@@ -75,6 +75,7 @@ class CanvasScrapyClient:
         return self.base_url() + path
 
     def api_courses_endpoint(self, course_id, path):
+        course_id = str(course_id)
         assert course_id.isalnum(), f"expected course_id to be alnum, got {course_id!r}"
         # path should include leading /
         return self.endpoint(f"/api/v1/courses/{course_id}{path}")
@@ -92,9 +93,9 @@ class CanvasScrapyClient:
             },
         )
 
-    def follow_pagination(self, response, callback):
+    def follow_pagination(self, response, callback, **kwargs):
         links = parse_header_links(response.headers.get("link", "").decode())
         next_links = [l for l in links if l.get("rel") == "next"]
         assert len(next_links) <= 1, f"got multiple next links: {links!r}"
         if next_links:
-            yield self.request(next_links[0]["url"], callback)
+            yield self.request(next_links[0]["url"], callback, **kwargs)

@@ -74,7 +74,9 @@ class PanoptoSessionsPipeline(FilesPipeline):
         return []
 
     def file_path(self, request, response=None, info=None, *, item=None):
-        assert isinstance(info.spider, PanoptoSpider), f"Expected to be scraping from PanoptoSpider"
+        assert isinstance(
+            info.spider, PanoptoSpider
+        ), f"Expected to be scraping from PanoptoSpider"
         course_id = info.spider.course_id
         name = item["name"]
         name = re.sub(r"[/\\?%*:|\"<>\x7F\x00-\x1F]", "-", name).strip(".")
