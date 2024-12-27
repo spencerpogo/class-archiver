@@ -31,7 +31,6 @@ class CanvasModulesSpider(scrapy.Spider):
     def start_requests(self):
         for mod in {"scrapy.downloadermiddlewares.redirect", "scrapy.core.scraper"}:
             logging.getLogger(mod).setLevel(logging.INFO)
-            pass
         yield self.canvas.request(
             self.canvas.api_courses_endpoint(self.course_id, "/modules"),
             self.parse_modules_list,

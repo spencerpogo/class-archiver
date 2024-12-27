@@ -28,8 +28,7 @@ class PanoptoSpider(scrapy.Spider):
 
     def start_requests(self):
         for mod in {"scrapy.downloadermiddlewares.redirect", "scrapy.core.scraper"}:
-            # logging.getLogger(mod).setLevel(logging.INFO)
-            pass
+            logging.getLogger(mod).setLevel(logging.INFO)
         yield self.canvas.request(
             self.canvas.api_courses_endpoint(
                 self.course_id, "/external_tools/visible_course_nav_tools"
@@ -62,8 +61,6 @@ class PanoptoSpider(scrapy.Spider):
         yield self.canvas.request(launch["url"], self.parse_panopto_tool_page)
 
     def parse_panopto_tool_page(self, response):
-        with open("a.html", "w") as f:
-            f.write(response.text)
         # for now, use dont_filter so we don't have to intercept the redirect and add
         #  to allowed_domains
         yield scrapy.FormRequest.from_response(
@@ -146,7 +143,6 @@ class PanoptoSpider(scrapy.Spider):
         num_results = data["TotalNumber"]
         assert isinstance(num_results, int)
         num_pages = math.ceil(num_results / RESULTS_PER_PAGE)
-        print(num_results, num_pages, page)
         # pages are 0-based!
         if page < num_pages - 1:
             yield from self.request_sessions_page(folder_id, page + 1)

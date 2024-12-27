@@ -42,15 +42,15 @@ class CanvasFilesPipeline(FilesPipeline):
 
     def item_completed(self, results, item, info):
         if isinstance(item, CanvasFileItem):
+            item["file_path"] = None
             ok_results = [r for ok, r in results if ok]
-            if len(ok_results) != 1:
+            if len(ok_results) > 1:
                 raise AssertionError(
-                    f"expected 1 ok result, got {len(ok_results)}: {results!r}"
+                    f"expected at most 1 ok result, got {len(ok_results)}: {results!r}"
                 )
-            (r,) = ok_results
-            if r.request.url != item["download_url"]:
-                raise AssertionError()
-            item["file_path"] = r["path"]
+            if ok_results:
+                (r,) = ok_results
+                item["file_path"] = r["path"]
         return item
 
 
@@ -83,11 +83,13 @@ class PanoptoSessionsPipeline(FilesPipeline):
 
     def item_completed(self, results, item, info):
         if isinstance(item, PanoptoSessionItem):
+            item["srt_path"] = None
             ok_results = [r for ok, r in results if ok]
-            if len(ok_results) != 1:
+            if len(ok_results) > 1:
                 raise AssertionError(
-                    f"expected 1 ok result, got {len(ok_results)}: {results!r}"
+                    f"expected at most 1 ok result, got {len(ok_results)}: {results!r}"
                 )
-            (r,) = ok_results
-            item["srt_path"] = r["path"]
+            if ok_results:
+                (r,) = ok_results
+                item["srt_path"] = r["path"]
         return item

@@ -25,7 +25,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -67,34 +67,34 @@ ITEM_PIPELINES = {
     "class_archiver.pipelines.PanoptoSessionsPipeline": 801,
 }
 MEDIA_ALLOW_REDIRECTS = True
-FILES_STORE = "./"
+FILES_STORE = "out"
 
 FEEDS = {
-    "export-%(course_id)s/canvas-modules.jsonl": {
+    "out/export-%(course_id)s/canvas-modules.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/canvas-module-subitems.jsonl": {
+    "out/export-%(course_id)s/canvas-module-subitems.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.ModuleSubitemItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/canvas-files.jsonl": {
+    "out/export-%(course_id)s/canvas-files.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.CanvasFileItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/canvas-pages.jsonl": {
+    "out/export-%(course_id)s/canvas-pages.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.CanvasPageItem"],
         "overwrite": True,
         "store_empty": False,
     },
-    "export-%(course_id)s/panopto-sessions.jsonl": {
+    "out/export-%(course_id)s/panopto-sessions.jsonl": {
         "format": "jsonlines",
         "item_classes": ["class_archiver.items.PanoptoSessionItem"],
         "overwrite": True,
