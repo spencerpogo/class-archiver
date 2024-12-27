@@ -1,6 +1,5 @@
 # scrapy outputs
-/files/
-/export-*
+/out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
